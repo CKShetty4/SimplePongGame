@@ -3,6 +3,9 @@
 #include <conio.h>
 using namespace std;
 enum eDir { STOP = 0, LEFT = 1, UPLEFT = 2, DOWNLEFT = 3, RIGHT = 4, UPRIGHT = 5, DOWNRIGHT = 6};
+
+//Basic Functionalities
+//For Ball
 class cBall
 {
 private:
@@ -14,12 +17,14 @@ public:
     {
         originalX = posX;
         originalY = posY;
-        x = posX; y = posY;
+        x = posX;
+        y = posY;
         direction = STOP;
     }
     void Reset()
     {
-        x = originalX; y = originalY;
+        x = originalX;
+        y = originalY;
         direction = STOP;
     }
     void changeDirection(eDir d)
@@ -30,9 +35,18 @@ public:
     {
         direction = (eDir)((rand() % 6) + 1);
     }
-    inline int getX() { return x; }
-    inline int getY() { return y; }
-    inline eDir getDirection() { return direction; }
+    inline int getX()
+    {
+        return x;
+    }
+    inline int getY()
+    {
+        return y;
+    }
+    inline eDir getDirection()
+    {
+        return direction;
+    }
     void Move()
     {
         switch (direction)
@@ -46,16 +60,20 @@ public:
             x++;
             break;
         case UPLEFT:
-            x--; y--;
+            x--;
+            y--;
             break;
         case DOWNLEFT:
-            x--; y++;
+            x--;
+            y++;
             break;
         case UPRIGHT:
-            x++; y--;
+            x++;
+            y--;
             break;
         case DOWNRIGHT:
-            x++; y++;
+            x++;
+            y++;
             break;
         default:
             break;
@@ -67,6 +85,9 @@ public:
         return o;
     }
 };
+
+//Basic Functionalities
+//For Paddle aka Player control
 class cPaddle
 {
 private:
@@ -84,17 +105,35 @@ public:
         x = posX;
         y = posY;
     }
-    inline void Reset() { x = originalX; y = originalY; }
-    inline int getX() { return x; }
-    inline int getY() { return y; }
-    inline void moveUp() { y--; }
-    inline void moveDown() { y++; }
+    inline void Reset()
+    {
+        x = originalX;
+        y = originalY;
+    }
+    inline int getX()
+    {
+        return x;
+    }
+    inline int getY()
+    {
+        return y;
+    }
+    inline void moveUp()
+    {
+        y--;
+    }
+    inline void moveDown()
+    {
+        y++;
+    }
     friend ostream & operator<<(ostream & o, cPaddle c)
     {
         o << "Paddle [" << c.x << "," << c.y << "]";
         return o;
     }
 };
+
+//Implementation of basic controls for the game play
 class cGameManger
 {
 private:
@@ -110,14 +149,19 @@ public:
     {
         srand(time(NULL));
         quit = false;
-        up1 = 'w'; up2 = 'i';
-        down1 = 's'; down2 = 'k';
+        up1 = 'w';
+        up2 = 'i';
+        down1 = 's';
+        down2 = 'k';
         score1 = score2 = 0;
-        width = w; height = h;
+        width = w;
+        height = h;
         ball = new cBall(w / 2, h / 2);
         player1 = new cPaddle(1, h / 2 - 3);
         player2 = new cPaddle(w - 2, h / 2 - 3);
     }
+    //Clearing memory for prevention of memory leaks
+
     ~cGameManger()
     {
         delete ball, player1, player2;
@@ -133,6 +177,7 @@ public:
         player1->Reset();
         player2->Reset();
     }
+    //Game UI
     void Draw()
     {
         system("cls");
@@ -189,6 +234,8 @@ public:
 
         cout << "Score 1: " << score1 << endl << "Score 2: " << score2 << endl;
     }
+
+    //Getting Player Inputs for the Paddle Movement
     void Input()
     {
         ball->Move();
@@ -203,39 +250,127 @@ public:
         if (_kbhit())
         {
             char current = _getch();
+            //Player 1 Controls
             if (current == up1)
                 if (player1y > 0)
                     player1->moveUp();
-            if (current == up2)
-                if (player2y > 0)
-                    player2->moveUp();
             if (current == down1)
                 if (player1y + 4 < height)
                     player1->moveDown();
+            //Player 2 Controls
+            if (current == up2)
+                if (player2y > 0)
+                    player2->moveUp();
             if (current == down2)
                 if (player2y + 4 < height)
                     player2->moveDown();
-
+            //Randomly Moving Ball
             if (ball->getDirection() == STOP)
                 ball->randomDirection();
-
+            //Game End Condition
             if (current == 'q')
                 quit = true;
         }
     }
 
+    //Game Logic for the GamePlay
+    void Logic()
+    {
+        int ballx = ball->getX();
+        int bally = ball->getY();
+        int player1x = player1->getX();
+        int player2x = player2->getX();
+        int player1y = player1->getY();
+        int player2y = player2->getY();
+
+        //left paddle
+        for (int i = 0; i < 4; i++)
+            if (ballx == player1x + 1)
+                if (bally == player1y + i)
+                    ball->changeDirection((eDir)((rand() % 3) + 4));
+
+        //right paddle
+        for (int i = 0; i < 4; i++)
+            if (ballx == player2x - 1)
+                if (bally == player2y + i)
+                    ball->changeDirection((eDir)((rand() % 3) + 1));
+
+        //bottom wall
+        if (bally == height - 1)
+            ball->changeDirection(ball->getDirection() == DOWNRIGHT ? UPRIGHT : UPLEFT);
+        //top wall
+        if (bally == 0)
+            ball->changeDirection(ball->getDirection() == UPRIGHT ? DOWNRIGHT : DOWNLEFT);
+        //right wall
+        if (ballx == width - 1)
+            ScoreUp(player1);
+        //left wall
+        if (ballx == 0)
+            ScoreUp(player2);
+    }
+
+    void Winner(int p)
+    {
+        system("cls");
+        for (int i = 0; i < width + 2; i++)
+            cout << "\xB2";
+        cout << endl;
+
+        // Calculate the center position
+        int centerX = width / 2;
+        int centerY = height / 2;
+        bool Printed = false;
+
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                if (j == 0)
+                    cout << "\xB2";
+
+                if (i == centerY && j >= centerX - 10 && j <= centerX + 10 && !Printed)
+                {
+                    cout << "player "<<p<<" wins";
+                    Printed = true;
+                    j += 12; // Skip the remaining characters in the row
+                }
+                else
+                    cout << " ";
+
+                if (j == width - 1)
+                    cout << "\xB2";
+            }
+            cout << endl;
+        }
+
+        for (int i = 0; i < width + 2; i++)
+            cout << "\xB2";
+        cout << endl;
+    }
     void Run()
     {
+
         while (!quit)
         {
             Draw();
             Input();
+            Logic();
+            if (score1 == 5)
+            {
+                Winner(1);
+            }
+            if (score2 == 5)
+            {
+                Winner(2);
+            }
+
         }
+
     }
 };
 int main()
 {
-    cGameManger c(40, 20);
+    cGameManger c(40,20);//width of 40 and a height of 20
     c.Run();
     return 0;
 }
