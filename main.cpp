@@ -159,10 +159,27 @@ public:
         {
             for (int j = 0; j < width; j++)
             {
+                int ballx = ball->getX();
+                int bally = ball->getY();
+                int player1x = player1->getX();
+                int player2x = player2->getX();
+                int player1y = player1->getY();
+                int player2y = player2->getY();
+
+
                 if (j == 0)
                     cout << "#";
-                if (j == 0)
-                    cout << "   ";
+
+
+                if (ballx == j && bally == i)
+                    cout << "O"; //ball
+                else if (player1x == j && player1y == i)
+                    cout << "\xDB"; //player1
+                else if (player2x == j && player2y == i)
+                    cout << "\xDB"; //player2
+                else
+                    cout << " ";
+
                 if (j == width - 1)
                     cout << "#";
             }
