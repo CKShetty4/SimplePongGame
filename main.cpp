@@ -1,3 +1,8 @@
+/*
+To measure the FPS of the game
+#include <chrono>
+#include <thread>
+*/
 #include <iostream>
 #include <time.h>
 #include <conio.h>
@@ -365,7 +370,30 @@ public:
             }
 
         }
+        /*
+        //To measure the FPS of the game Remove the comment and changw to this while loop by commenting above while loop
+        using namespace std::chrono;
+        int frame_count = 0;
+        auto start_time = high_resolution_clock::now();
 
+        while (!quit)
+        {
+          Draw();
+          Input();
+          Logic();
+          frame_count++;
+
+          auto current_time = high_resolution_clock::now();
+          auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+
+          if (elapsed_time >= 1)
+          {
+              cout << "FPS: " << frame_count << endl;
+              frame_count = 0;
+              start_time = current_time;
+          }
+        }
+        */
     }
 };
 int main()
