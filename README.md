@@ -16,12 +16,14 @@ This is a simple implementation of the classic Pong game, developed in C++ with 
 
 ## How to Play
 
-1. Run the game and select your game mode (2 players).
+1. Run the game.
 2. Use the designated keys to control your paddles:
    - Player 1: `W` to move up, `S` to move down.
    - Player 2: `I` to move up, `K` to move down.
 3. The goal is to prevent the ball from passing your paddle and score by bouncing it past your opponent.
 4. The game ends when a player reaches 5 points or when the `Q` key is pressed to quit.
+
+It's just that simple
 
 ## Known Issues
 
