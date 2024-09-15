@@ -149,17 +149,33 @@ public:
         player1->Reset();
         player2->Reset();
     }
+    void Draw()
+    {
+        system("cls");
+        for (int i = 0; i < width + 2; i++)
+            cout << "#";
+        cout << endl;
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                if (j == 0)
+                    cout << "#";
+                if (j == 0)
+                    cout << "   ";
+                if (j == width - 1)
+                    cout << "#";
+            }
+            cout << endl;
+        }
+        for (int i = 0; i < width + 2; i++)
+            cout << "#";
+    }
+
 };
 int main()
 {
-    cPaddle p1(0,0);
-    cPaddle p2(10,0);
-    cout<<p1<<endl;
-    cout<<p2<<endl;
-    p1.moveUp();
-    p2.moveDown();
-    cout<<p1<<endl;
-    cout<<p2<<endl;
-
+    cGameManger c(40, 20);
+    c.Draw();
     return 0;
 }

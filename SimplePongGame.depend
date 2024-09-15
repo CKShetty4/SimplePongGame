@@ -1,4 +1,6 @@
 # depslib dependency file v1.0
-1584205420 source:d:\desktop\files\projects\cpp\simpleponggame\main.cpp
+1726364213 source:d:\desktop\files\projects\cpp\simpleponggame\main.cpp
 	<iostream>
+	<time.h>
+	<conio.h>
 
