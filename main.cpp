@@ -1,15 +1,13 @@
 #include <iostream>
 #include <time.h>
 #include <conio.h>
-
 using namespace std;
-
 enum eDir { STOP = 0, LEFT = 1, UPLEFT = 2, DOWNLEFT = 3, RIGHT = 4, UPRIGHT = 5, DOWNRIGHT = 6};
 class cBall
 {
-private :
-    int x,y;
-    int originalX,originalY;
+private:
+    int x, y;
+    int originalX, originalY;
     eDir direction;
 public:
     cBall(int posX, int posY)
@@ -19,8 +17,6 @@ public:
         x = posX; y = posY;
         direction = STOP;
     }
-
-    //basic Functionalities
     void Reset()
     {
         x = originalX; y = originalY;
@@ -28,24 +24,18 @@ public:
     }
     void changeDirection(eDir d)
     {
-        direction =d;
-
+        direction = d;
     }
     void randomDirection()
     {
-        direction=(eDir)((rand()%6)+1);
+        direction = (eDir)((rand() % 6) + 1);
     }
-
-    //To get current coordinates
     inline int getX() { return x; }
     inline int getY() { return y; }
     inline eDir getDirection() { return direction; }
-
-
-    //To Make the ball to be able to move
     void Move()
     {
-        switch(direction)
+        switch (direction)
         {
         case STOP:
             break;
@@ -76,9 +66,7 @@ public:
         o << "Ball [" << c.x << "," << c.y << "][" << c.direction << "]";
         return o;
     }
-
 };
-
 class cPaddle
 {
 private:
@@ -107,8 +95,6 @@ public:
         return o;
     }
 };
-
-//Using Both above basic functions to manage game.
 class cGameManger
 {
 private:
@@ -132,8 +118,6 @@ public:
         player1 = new cPaddle(1, h / 2 - 3);
         player2 = new cPaddle(w - 2, h / 2 - 3);
     }
-
-    //Clear memory to prevent data leaks
     ~cGameManger()
     {
         delete ball, player1, player2;
@@ -155,6 +139,7 @@ public:
         for (int i = 0; i < width + 2; i++)
             cout << "\xB2";
         cout << endl;
+
         for (int i = 0; i < height; i++)
         {
             for (int j = 0; j < width; j++)
@@ -166,10 +151,8 @@ public:
                 int player1y = player1->getY();
                 int player2y = player2->getY();
 
-
                 if (j == 0)
                     cout << "\xB2";
-
 
                 if (ballx == j && bally == i)
                     cout << "O"; //ball
@@ -199,14 +182,60 @@ public:
             }
             cout << endl;
         }
+
         for (int i = 0; i < width + 2; i++)
             cout << "\xB2";
+        cout << endl;
+
+        cout << "Score 1: " << score1 << endl << "Score 2: " << score2 << endl;
+    }
+    void Input()
+    {
+        ball->Move();
+
+        int ballx = ball->getX();
+        int bally = ball->getY();
+        int player1x = player1->getX();
+        int player2x = player2->getX();
+        int player1y = player1->getY();
+        int player2y = player2->getY();
+
+        if (_kbhit())
+        {
+            char current = _getch();
+            if (current == up1)
+                if (player1y > 0)
+                    player1->moveUp();
+            if (current == up2)
+                if (player2y > 0)
+                    player2->moveUp();
+            if (current == down1)
+                if (player1y + 4 < height)
+                    player1->moveDown();
+            if (current == down2)
+                if (player2y + 4 < height)
+                    player2->moveDown();
+
+            if (ball->getDirection() == STOP)
+                ball->randomDirection();
+
+            if (current == 'q')
+                quit = true;
+        }
     }
 
+    void Run()
+    {
+        while (!quit)
+        {
+            Draw();
+            Input();
+        }
+    }
 };
 int main()
 {
     cGameManger c(40, 20);
-    c.Draw();
+    c.Run();
     return 0;
 }
